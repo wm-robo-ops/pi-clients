@@ -23,6 +23,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
 import logging
 import sys
 import time
@@ -30,42 +31,6 @@ import socket
 
 from Adafruit_BNO055 import BNO055
 
-
-# Create and configure the BNO sensor connection.  Make sure only ONE of the
-# below 'bno = ...' lines is uncommented:
-# Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
-bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
-# BeagleBone Black configuration with default I2C connection (SCL=P9_19, SDA=P9_20),
-# and RST connected to pin P9_12:
-#bno = BNO055.BNO055(rst='P9_12')
-
-
-# Enable verbose debug logging if -v is passed as a parameter.
-if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
-    logging.basicConfig(level=logging.DEBUG)
-
-# Initialize the BNO055 and stop if something went wrong.
-if not bno.begin():
-    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
-
-# Print system status and self test result.
-status, self_test, error = bno.get_system_status()
-print('System status: {0}'.format(status))
-print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
-# Print out an error if system status is in error mode.
-if status == 0x01:
-    print('System error: {0}'.format(error))
-    print('See datasheet section 4.3.59 for the meaning.')
-
-# Print BNO055 software revision and other diagnostic data.
-sw, bl, accel, mag, gyro = bno.get_revision()
-print('Software version:   {0}'.format(sw))
-print('Bootloader version: {0}'.format(bl))
-print('Accelerometer ID:   0x{0:02X}'.format(accel))
-print('Magnetometer ID:    0x{0:02X}'.format(mag))
-print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
-
-print('Reading BNO055 data, press Ctrl-C to quit...')
 
 def connect():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -77,18 +42,77 @@ def connect():
 def send(a_str, s):
 	s.send(a_str.encode())
 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isConnected = 0
+bno055 = 0
 
 while True:
+	
+	#try to connect bno055
+	while bno055 == 0:
+		try:
+			# Create and configure the BNO sensor connection.  Make sure only ONE of the
+			# below 'bno = ...' lines is uncommented:
+			# Raspberry Pi configuration with serial UART and RST connected to GPIO 18:
+			bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
+			
+			# BeagleBone Black configuration with default I2C connection (SCL=P9_19, SDA=P9_20),
+			# and RST connected to pin P9_12:
+			#bno = BNO055.BNO055(rst='P9_12')
+
+
+			# Enable verbose debug logging if -v is passed as a parameter.
+			if len(sys.argv) == 2 and sys.argv[1].lower() == '-v':
+			    logging.basicConfig(level=logging.DEBUG)
+
+			# Initialize the BNO055 and stop if something went wrong.
+			if not bno.begin():
+			    raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+
+			# Print system status and self test result.
+			status, self_test, error = bno.get_system_status()
+			print('System status: {0}'.format(status))
+			print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+			
+			# Print out an error if system status is in error mode.
+			if status == 0x01:
+			    print('System error: {0}'.format(error))
+			    print('See datasheet section 4.3.59 for the meaning.')
+
+			# Print BNO055 software revision and other diagnostic data.
+			sw, bl, accel, mag, gyro = bno.get_revision()
+			print('Software version:   {0}'.format(sw))
+			print('Bootloader version: {0}'.format(bl))
+			print('Accelerometer ID:   0x{0:02X}'.format(accel))
+			print('Magnetometer ID:    0x{0:02X}'.format(mag))
+			print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
+			print('Reading BNO055 data, press Ctrl-C to quit...')
+
+			#bno055 is connected
+			bno055 = 1
+
+		except:
+			print("error starting bno055")
+
 	#try to connect socket
 	while isConnected == 0:
 		try:
 			s = connect()
 			isConnected = 1
+		
 		except socket.error:
 			time.sleep(1)
 			isConnected = 0
+
+		except:
+			bno055 = 0
+			break
+
+	#if not connected restart loop to connect
+	if (bno055 == 0):
+		continue
+
 	while True:
 		#try to send data
 		try:
@@ -119,9 +143,14 @@ while True:
 			#x,y,z = bno.read_gravity()
 			# Sleep for a second until the next reading.
 			time.sleep(.0001)
+		
 		except socket.error:
 			s.close()
 			isConnected = 0
+			break
+
+		except:
+			bno055 = 0
 			break
 
 s.close()

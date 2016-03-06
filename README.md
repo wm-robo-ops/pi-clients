@@ -3,7 +3,7 @@ pi clients for server
 
 ##Dependencies
 
-Adafruit BNO055
+Adafruit_BNO055
 
 ###Installing
 
