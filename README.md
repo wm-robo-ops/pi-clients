@@ -4,6 +4,7 @@ pi clients for server
 ##Dependencies
 
 Adafruit_BNO055
+
 FFMPEG
 
 ###Installing
