@@ -31,11 +31,11 @@ import socket
 
 from Adafruit_BNO055 import BNO055
 
+host = "100.91.29.141"
+port = 9000
 
 def connect():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	host = "100.91.29.141"
-	port = 9000
 	s.connect((host, port))
 	return s
 

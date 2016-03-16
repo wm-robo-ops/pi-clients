@@ -22,14 +22,14 @@ command = {
 curPan = 0
 curTilt = 0
 
-}
+# host name and port number
+
+host = "100.91.29.141"
+port = 9998
 
 #connect to server
->>>>>>> 934bbfeb80027e03ffb05fce5957f8c4ea5c6f4c
 def connect():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	host = "100.91.29.141"
-	port = 9998
 	s.connect((host, port))
 	return s
 
@@ -81,7 +81,7 @@ def start_process(input_str):
 		#stop process
 		elif (start_stop == "STOP"):
 			if (pid[the_command] != False):
-				if (the_command = VIDEO_STREAM):
+				if (the_command == VIDEO_STREAM):
 					kill = "pkill ffmpeg"
 				else:
 					kill = "kill -9 " + str(pid[the_command])
