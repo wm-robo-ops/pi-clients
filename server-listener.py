@@ -3,6 +3,8 @@
 import socket
 import os
 
+
+#dictionaries for processes
 pid = {
 	"VIDEO_STREAM": False,
 	"DIRECTION_STREAM": False,
@@ -12,7 +14,7 @@ pid = {
 command = {
 	"VIDEO_STREAM": "./start_video_stream.sh",
 	"DIRECTION_STREAM": "./dofdevice.py",
-	"GPS_STREAM": "...",
+	"GPS_STREAM": "./test.py",
 	"PAN_TILT": "./pan_tilt.sh"
 }
 
@@ -20,6 +22,10 @@ command = {
 curPan = 0
 curTilt = 0
 
+}
+
+#connect to server
+>>>>>>> 934bbfeb80027e03ffb05fce5957f8c4ea5c6f4c
 def connect():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	host = "100.91.29.141"
@@ -27,9 +33,13 @@ def connect():
 	s.connect((host, port))
 	return s
 
+
+#send string to socket
 def send(a_str, s):
 	s.send(a_str.encode())
 
+
+#recieve data from socket
 def recieve(s):
 	print("waiting")
 	command = ''
@@ -38,8 +48,9 @@ def recieve(s):
 	return command
 
 
+#start process
 def start_process(input_str):
-	#try:
+	try:
 		process = input_str.split("|")
 		args = process[0].split(":")
 		
@@ -48,6 +59,7 @@ def start_process(input_str):
 
 		start_stop = args[0]
 		the_command = args[1]
+		
 		#start process
 		if (start_stop == "START"):
 			if (pid[the_command] == False):
@@ -66,6 +78,7 @@ def start_process(input_str):
 					pid[the_command] = the_pid
 					return
 		
+		#stop process
 		elif (start_stop == "STOP"):
 			if (pid[the_command] != False):
 				if (the_command = VIDEO_STREAM):
@@ -75,8 +88,9 @@ def start_process(input_str):
 				
 				os.system(kill)
 				pid[the_command] = False
-	#except:
-	#	print("error in start_process")
+	
+	except:
+		print("error in start_process")
 	
 
 
@@ -87,20 +101,19 @@ while True:
 		try:
 			s = connect()
 			isConnected = 1
+		
 		except socket.error:
 			isConnected = 0
 	while True:
 		try:
 			a_command = None
 			a_command = recieve(s)
+		
 			if a_command != None and a_command != "":
 				start_process(a_command)
 			else:
 				isConnected = 0
 				break
-			#print("Test")
-			#start_process("test.py;|")
-			#exit(0)		
 		
 		except socket.error:
 			s.close()
