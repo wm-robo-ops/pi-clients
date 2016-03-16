@@ -12,8 +12,13 @@ pid = {
 command = {
 	"VIDEO_STREAM": "./start_video_stream.sh",
 	"DIRECTION_STREAM": "./dofdevice.py",
-	"GPS_STREAM": "..."
+	"GPS_STREAM": "...",
+	"PAN_TILT": "./pan_tilt.sh"
 }
+
+# track current pan and tilt angles
+curPan = 0
+curTilt = 0
 
 def connect():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,7 +68,11 @@ def start_process(input_str):
 		
 		elif (start_stop == "STOP"):
 			if (pid[the_command] != False):
-				kill = "kill -9 " + str(pid[the_command])
+				if (the_command = VIDEO_STREAM):
+					kill = "pkill ffmpeg"
+				else:
+					kill = "kill -9 " + str(pid[the_command])
+				
 				os.system(kill)
 				pid[the_command] = False
 	#except:
