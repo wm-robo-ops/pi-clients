@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if (!(pidof pigpiod) > 0) then
+if (!(pidof pigpiod)) then
 sudo pigpiod
 fi
 
