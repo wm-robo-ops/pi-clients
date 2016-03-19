@@ -12,10 +12,10 @@ pid = {
 }
 
 command = {
-    "VIDEO_STREAM": "./start_video_stream.sh",
-    "DIRECTION_STREAM": "./dofdevice.py",
-    "GPS_STREAM": "./test.py",
-    "PAN_TILT": "./pan_tilt.sh"
+    "VIDEO_STREAM": "/home/pi/robo-ops/pi-clients/start_video_stream.sh",
+    "DIRECTION_STREAM": "/home/pi/robo-ops/pi-clients/dofdevice.py",
+    "GPS_STREAM": "/home/pi/robo-ops/pi-clients/test.py",
+    "PAN_TILT": "/home/pi/robo-ops/pi-clients/pan_tilt.sh"
 }
 
 # track current pan and tilt angles
@@ -24,7 +24,7 @@ curTilt = 0
 
 # host name and port number
 
-host = "100.91.29.141"
+host = "192.168.1.132"
 port = 9998
 
 #connect to server

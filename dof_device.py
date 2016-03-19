@@ -31,7 +31,7 @@ import socket
 
 from Adafruit_BNO055 import BNO055
 
-host = "100.91.29.141"
+host = "192.168.1.132"
 port = 9000
 
 def connect():
