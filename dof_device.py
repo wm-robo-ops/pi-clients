@@ -40,7 +40,7 @@ def connect():
     return s
 
 def send(a_str, s):
-    s.send(a_str.encode())
+    s.sendall(a_str.encode())
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
