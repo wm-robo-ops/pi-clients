@@ -40,6 +40,8 @@ def sendPic(file_name):
         f = open(file_name, 'r')
         pic_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         pic_sock.connect((host, pic_port))
+
+        # send file
         data = f.read(1024)
         while (data):
             pic_sock.sendall(data)
@@ -93,18 +95,18 @@ def start_process(input_str):
                         pid[the_command] = the_pid
                     else:
                         
-                        while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]) + ".png")):
+                        while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]))):
                             continue
                         
-                        sendPic("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]) + ".png")
+                        sendPic("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]))
 
         #stop process
         elif (start_stop == "STOP"):
             if (pid[the_command] != False):
                 if (the_command == "VIDEO_STREAM"):
-                    kill = "pkill ffmpeg"
+                    kill = "sudo pkill ffmpeg"
                 else:
-                    kill = "kill -9 " + str(pid[the_command])
+                    kill = "sudo kill -9 " + str(pid[the_command])
 
                 os.system(kill)
                 pid[the_command] = False
