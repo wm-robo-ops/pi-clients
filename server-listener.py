@@ -3,9 +3,6 @@
 import socket
 import os
 
-#pic number
-pic_num = 0
-
 #dictionaries for processes
 pid = {
     "VIDEO_STREAM": False,
@@ -66,7 +63,7 @@ def receive(s):
 
 
 #start process
-def start_process(input_str, pic_num):
+def start_process(input_str):
     try:
         process = input_str.split("|")
         args = process[0].split(":")
@@ -84,8 +81,6 @@ def start_process(input_str, pic_num):
                 if (len(args) > 2):
                     for i in range (2, len(args)):
                         process_args.append(args[i])
-                if (the_command == "CAPTURE_PHOTO"):
-                    process_args.append(str(pic_num))
     
                 the_pid = os.fork()
                 #child
@@ -98,11 +93,10 @@ def start_process(input_str, pic_num):
                         pid[the_command] = the_pid
                     else:
                         
-                        while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(pic_num) + ".png")):
+                        while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]) + ".png")):
                             continue
                         
-                        sendPic("/home/pi/robo-ops/pi-clients/pics/" + str(pic_num) + ".png")
-                        pic_num += 1
+                        sendPic("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]) + ".png")
 
         #stop process
         elif (start_stop == "STOP"):
@@ -118,7 +112,7 @@ def start_process(input_str, pic_num):
     except:
         print("error in start_process")
     finally:
-        return pic_num
+        return
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -137,7 +131,7 @@ while True:
             a_command = receive(s)
 
             if a_command != None and a_command != "":
-                pic_num = start_process(a_command, pic_num)
+                start_process(a_command)
             else:
                 isConnected = 0
                 break
