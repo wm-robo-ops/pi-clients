@@ -6,4 +6,4 @@ width=320
 height=240
 
 sudo modprobe bcm2835-v4l2
-ffmpeg -s $width'x'$height -f rawvideo -pix_fmt yuv420p -i /dev/video0 -f mpeg1video -b:v 800k -strict -1 -r $1 $ip:$port/$width/$height
+ffmpeg -s $width'x'$height -f rawvideo -pix_fmt yuv420p -i /dev/video0 -f mpeg1video -b:v 800k -strict -1 -r $1 $ip:$port
