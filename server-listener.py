@@ -6,7 +6,6 @@ import os
 #pic number
 pic_num = 0
 
-
 #dictionaries for processes
 pid = {
     "VIDEO_STREAM": False,
@@ -37,23 +36,29 @@ def connect():
 
 #send string to socket
 def send(a_str, s):
-    s.send(a_str.encode())
+    s.sendall(a_str.encode())
 
 def sendPic(file_name):
-    f = open(file_name, 'r')
-    pic_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    pic_sock.connect((host, pic_port))
-    data = f.read(1024)
-    while (data):
-        pic_sock.send(data)
+    try:
+        f = open(file_name, 'r')
+        pic_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        pic_sock.connect((host, pic_port))
         data = f.read(1024)
-    f.close()
-    pic_sock.close()
-    print("done sending pic")
+        while (data):
+            pic_sock.sendall(data)
+            data = f.read(1024)
+        f.close()
+        pic_sock.close()
+        print("done sending pic")
+    
+    except:
+        print("error in sendPic")
+
+
 
 #recieve data from socket
-def recieve(s):
-    print("waiting")
+def receive(s):
+    print("waiting to receive command")
     command = ''
     command = s.recv(1024).decode()
     print (command)
@@ -62,7 +67,7 @@ def recieve(s):
 
 #start process
 def start_process(input_str, pic_num):
-#try:
+    try:
         process = input_str.split("|")
         args = process[0].split(":")
 
@@ -92,10 +97,12 @@ def start_process(input_str, pic_num):
                     if (the_command != "CAPTURE_PHOTO"):
                         pid[the_command] = the_pid
                     else:
+                        
                         while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(pic_num) + ".png")):
                             continue
+                        
                         sendPic("/home/pi/robo-ops/pi-clients/pics/" + str(pic_num) + ".png")
-                    return
+                        pic_num += 1
 
         #stop process
         elif (start_stop == "STOP"):
@@ -107,9 +114,11 @@ def start_process(input_str, pic_num):
 
                 os.system(kill)
                 pid[the_command] = False
-       #except:
-#    print("error in start_process")
 
+    except:
+        print("error in start_process")
+    finally:
+        return pic_num
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -125,11 +134,10 @@ while True:
     while True:
         try:
             a_command = None
-            a_command = recieve(s)
+            a_command = receive(s)
 
             if a_command != None and a_command != "":
-                start_process(a_command, pic_num)
-                pic_num += 1
+                pic_num = start_process(a_command, pic_num)
             else:
                 isConnected = 0
                 break
