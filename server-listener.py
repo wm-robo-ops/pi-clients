@@ -2,6 +2,7 @@
 
 import socket
 import os
+import sys
 
 #dictionaries for processes
 pid = {
@@ -13,7 +14,7 @@ pid = {
 
 command = {
     "VIDEO_STREAM": "/home/pi/robo-ops/pi-clients/start_video_stream.sh",
-    "DIRECTION_STREAM": "/home/pi/robo-ops/pi-clients/dofdevice.py",
+    "DIRECTION_STREAM": "/home/pi/robo-ops/pi-clients/dof_device.py",
     "GPS_STREAM": "/home/pi/robo-ops/pi-clients/test.py",
     "CAPTURE_PHOTO": "/home/pi/robo-ops/pi-clients/take_pic.sh"
 }
@@ -29,38 +30,47 @@ pic_port = 7777
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
+    print("server-listener: connected to command server")
     return s
 
 #send string to socket
 def send(a_str, s):
     s.sendall(a_str.encode())
 
+#send a picture with given file name
 def sendPic(file_name):
     try:
         f = open(file_name, 'r')
         pic_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         pic_sock.connect((host, pic_port))
-
+        
+        print("server-listener: sending picture to server ip: " + str(host) + "port: " + str(port))
+        
         # send file
         data = f.read(1024)
         while (data):
             pic_sock.sendall(data)
             data = f.read(1024)
-        f.close()
-        pic_sock.close()
-        print("done sending pic")
+        print("server-listener: done sending pic")
     
     except:
-        print("error in sendPic")
+        print("server-listener: error in sendPic")
 
-
+    finally:
+        f.close()
+        pic_sock.close()
 
 #recieve data from socket
 def receive(s):
-    print("waiting to receive command")
+    print("server-listener: waiting to receive command")
     command = ''
-    command = s.recv(1024).decode()
-    print (command)
+    data = ''
+    
+    while (data != "|"):
+        data = s.recv(1).decode()
+        command += data
+
+    print ("server-listener: " + command)
     return command
 
 
@@ -83,12 +93,16 @@ def start_process(input_str):
                 if (len(args) > 2):
                     for i in range (2, len(args)):
                         process_args.append(args[i])
-    
+                
+                #add host param if needed        
+                if (the_command != "CAPTURE_PHOTO"):
+                    process_args.append(str(host))
+
                 the_pid = os.fork()
                 #child
                 if the_pid == 0:
                     os.execl(command[the_command], *tuple(process_args))
-                    assert False, 'error starting procces'
+                    assert False, 'server-listener: error starting child procces'
                 #parent
                 else:
                     if (the_command != "CAPTURE_PHOTO"):
@@ -112,10 +126,16 @@ def start_process(input_str):
                 pid[the_command] = False
 
     except:
-        print("error in start_process")
+        print("server-listener: error in start_process")
     finally:
         return
 
+if (len(sys.argv) < 2):
+    print("server-listener: server_ip")
+    sys.exit(1)
+
+host = str(sys.argv[1])
+print("server-listener: starting with server ip: " + str(host) + " and port: " + str(port))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isConnected = 0
@@ -126,7 +146,9 @@ while True:
             isConnected = 1
 
         except socket.error:
+            s.close()
             isConnected = 0
+    
     while True:
         try:
             a_command = None
@@ -135,11 +157,15 @@ while True:
             if a_command != None and a_command != "":
                 start_process(a_command)
             else:
+                print("server-listener: disconnected from command server")
+                s.close()
                 isConnected = 0
                 break
 
         except socket.error:
+            print("server-listener: disconnected from command server")
             s.close()
             isConnected = 0
             break
+
 s.close()

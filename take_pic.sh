@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#DATE=$(date +"%Y-%m-%d_%H%M")
 width=2592
 height=1944
 

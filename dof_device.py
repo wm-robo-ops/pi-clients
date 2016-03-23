@@ -31,6 +31,7 @@ import socket
 
 from Adafruit_BNO055 import BNO055
 
+
 host = "192.168.1.132"
 port = 9000
 
@@ -42,6 +43,12 @@ def connect():
 def send(a_str, s):
     s.sendall(a_str.encode())
 
+if (len(sys.argv) < 2):
+    print("dof: server_ip")
+    sys.exit(1)
+
+host = str(sys.argv[1])
+print("dof: connecting to server with ip: " + str(host) + " and port: " + str(port))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isConnected = 0
@@ -72,37 +79,41 @@ while True:
 
             # Print system status and self test result.
             status, self_test, error = bno.get_system_status()
-            print('System status: {0}'.format(status))
-            print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
+            #print('System status: {0}'.format(status))
+            #print('Self test result (0x0F is normal): 0x{0:02X}'.format(self_test))
 
             # Print out an error if system status is in error mode.
             if status == 0x01:
-                print('System error: {0}'.format(error))
-                print('See datasheet section 4.3.59 for the meaning.')
+                pass
+                #print('System error: {0}'.format(error))
+                #print('See datasheet section 4.3.59 for the meaning.')
 
             # Print BNO055 software revision and other diagnostic data.
             sw, bl, accel, mag, gyro = bno.get_revision()
-            print('Software version:   {0}'.format(sw))
-            print('Bootloader version: {0}'.format(bl))
-            print('Accelerometer ID:   0x{0:02X}'.format(accel))
-            print('Magnetometer ID:    0x{0:02X}'.format(mag))
-            print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
-            print('Reading BNO055 data, press Ctrl-C to quit...')
+            #print('Software version:   {0}'.format(sw))
+            #print('Bootloader version: {0}'.format(bl))
+            #print('Accelerometer ID:   0x{0:02X}'.format(accel))
+            #print('Magnetometer ID:    0x{0:02X}'.format(mag))
+            #print('Gyroscope ID:       0x{0:02X}\n'.format(gyro))
+            #print('Reading BNO055 data, press Ctrl-C to quit...')
 
             #bno055 is connected
             bno055 = 1
+            print("dof: device connected")
 
         except:
-            print("error starting bno055")
+            print("dof: error starting bno055")
 
     #try to connect socket
     while isConnected == 0:
         try:
             s = connect()
             isConnected = 1
+            print("dof: connected to server")
 
         except socket.error:
             time.sleep(1)
+            s.close()
             isConnected = 0
 
         except:
