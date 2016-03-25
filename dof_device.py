@@ -115,6 +115,7 @@ while True:
             time.sleep(1)
             s.close()
             isConnected = 0
+            break
 
         except:
             bno055 = 0

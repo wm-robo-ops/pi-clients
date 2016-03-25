@@ -6,7 +6,7 @@ import os
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-pi_address = ("localhost", 12000)
+pi_address = ("127.0.0.1", 12000)
 s.connect(pi_address)
 
 try:

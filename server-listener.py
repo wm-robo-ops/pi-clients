@@ -64,11 +64,14 @@ def sendPic(file_name):
 def receive(s):
     print("server-listener: waiting to receive command")
     command = ''
-    data = ''
+    data = ' '
     
     while (data != "|"):
         data = s.recv(1).decode()
-        command += data
+        if (len(data) == 0):
+            break
+        if (data != " "):
+            command += data
 
     print ("server-listener: " + command)
     return command
@@ -76,7 +79,7 @@ def receive(s):
 
 #start process
 def start_process(input_str):
-    try:
+#   try:
         process = input_str.split("|")
         args = process[0].split(":")
 
@@ -89,6 +92,8 @@ def start_process(input_str):
         #start process
         if (start_stop == "START"):
             if (pid[the_command] == False):
+                if (the_command == "CAPTURE_PHOTO" and pid["VIDEO_STREAM"] != False):
+                    return
                 process_args = [command[the_command]]
                 if (len(args) > 2):
                     for i in range (2, len(args)):
@@ -125,10 +130,10 @@ def start_process(input_str):
                 os.system(kill)
                 pid[the_command] = False
 
-    except:
-        print("server-listener: error in start_process")
-    finally:
-        return
+#except:
+#        print("server-listener: error in start_process")
+#   finally:
+#       return
 
 if (len(sys.argv) < 2):
     print("server-listener: server_ip")
@@ -146,7 +151,7 @@ while True:
             isConnected = 1
 
         except socket.error:
-            s.close()
+#s.close()
             isConnected = 0
     
     while True:
@@ -158,7 +163,7 @@ while True:
                 start_process(a_command)
             else:
                 print("server-listener: disconnected from command server")
-                s.close()
+#s.close()
                 isConnected = 0
                 break
 

@@ -12,7 +12,7 @@ def send(a_str, s):
 def listen(s):
     #bind port
     pi_address = ("localhost", port)
-    print ("listening on port " + str(pi_address[1]))
+    print ("start: listening on port " + str(pi_address[1]))
     s.bind(pi_address)
     s.listen(1)
 
@@ -23,9 +23,12 @@ def listen(s):
         try:
             #recieve ip adress of server
             server_ip = ""
-            data = ""
+            data = " "
             while (data != "|"):
-                server_ip += data
+                if (data != " "):
+                    server_ip += data
+                if (len(data) == 0):
+                    break
                 data = connection.recv(1)
             
             print("starting server-listener with server ip: " + str(server_ip))
@@ -40,11 +43,13 @@ def listen(s):
             else:
                 #wait for child to end
                 os.waitpid(the_pid, 0)
+        except:
+            print("start: error recieving ip address")
 
         finally:
             connection.close()
 
 #create the socket and listen
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-listen(s);
+listen(s)
 
