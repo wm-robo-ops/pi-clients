@@ -7,10 +7,14 @@ Adafruit_BNO055
 
 FFMPEG
 
+netifaces
+
 ###Installing
 
 ####Adafruit_BNO055
 ```
+sudo apt-get update
+sudo apt-get install -y build-essential python-dev python-smbus python-pip git
 git clone https://github.com/adafruit/Adafruit_Python_BNO055.git
 cd Adafruit_Python_BNO055
 sudo python setup.py install
@@ -31,8 +35,12 @@ sudo ./configure --arch=armel --target-os=linux --enable-gpl --enable-libx264 --
 sudo make [-j 6]
 sudo make install
 ```
+####netifaces
+```
+sudo pip install netifaces
+```
 
 ##Running
 ```
-./server-listener.py
+./server-listener.py server_ip
 ```
