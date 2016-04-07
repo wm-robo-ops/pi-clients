@@ -4,8 +4,8 @@ import socket
 
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = "100.91.29.141"
-    port = 9000
+    host = "198.168.1.132"
+    port = 9998
     s.connect((host, port))
     return s
 

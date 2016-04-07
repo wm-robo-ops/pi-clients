@@ -28,16 +28,20 @@ import logging
 import sys
 import time
 import socket
+import netifaces as ni
 
 from Adafruit_BNO055 import BNO055
 
-
 host = "192.168.1.132"
-port = 9000
+port = 3000
 
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
+    #find my ip
+    ni.ifaddresses('wlan0');
+    ip = ni.ifaddresses('wlan0')[2][0]['addr']
+    send(ip + "~", s)
     return s
 
 def send(a_str, s):

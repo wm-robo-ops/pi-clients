@@ -3,6 +3,11 @@
 import socket
 import os
 import sys
+import time
+import netifaces as ni
+
+#video on should be previous fps
+video_on = 0
 
 #dictionaries for processes
 pid = {
@@ -13,7 +18,7 @@ pid = {
 }
 
 command = {
-    "VIDEO_STREAM": "/home/pi/robo-ops/pi-clients/start_video_stream.sh",
+    "VIDEO_STREAM": "/home/pi/robo-ops/pi-clients/start_video_stream2.sh",
     "DIRECTION_STREAM": "/home/pi/robo-ops/pi-clients/dof_device.py",
     "GPS_STREAM": "/home/pi/robo-ops/pi-clients/test.py",
     "CAPTURE_PHOTO": "/home/pi/robo-ops/pi-clients/take_pic.sh"
@@ -22,15 +27,19 @@ command = {
 # host name and port number
 
 host = "192.168.1.132"
-port = 9998
+port = 9000
 
-pic_port = 7777
+pic_port = 7000
 
 #connect to server
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
     print("server-listener: connected to command server")
+    #find my ip
+    ni.ifaddresses('wlan0');
+    ip = ni.ifaddresses('wlan0')[2][0]['addr']
+    send(ip + "~", s)
     return s
 
 #send string to socket
@@ -68,6 +77,7 @@ def receive(s):
     
     while (data != "|"):
         data = s.recv(1).decode()
+        sys.stdout.write(data)
         if (len(data) == 0):
             break
         if (data != " "):
@@ -80,6 +90,7 @@ def receive(s):
 #start process
 def start_process(input_str):
 #   try:
+        global video_on
         process = input_str.split("|")
         args = process[0].split(":")
 
@@ -93,7 +104,10 @@ def start_process(input_str):
         if (start_stop == "START"):
             if (pid[the_command] == False):
                 if (the_command == "CAPTURE_PHOTO" and pid["VIDEO_STREAM"] != False):
-                    return
+                    os.system("/home/pi/robo-ops/pi-clients/stop_video.sh")
+                    print("stopped video")
+                    time.sleep(2)
+                    #return
                 process_args = [command[the_command]]
                 if (len(args) > 2):
                     for i in range (2, len(args)):
@@ -102,6 +116,10 @@ def start_process(input_str):
                 #add host param if needed        
                 if (the_command != "CAPTURE_PHOTO"):
                     process_args.append(str(host))
+                
+                #if we need to set video variable
+                if (the_command == "VIDEO_STREAM"):
+                    video_on = process_args[-2]
 
                 the_pid = os.fork()
                 #child
@@ -113,7 +131,13 @@ def start_process(input_str):
                     if (the_command != "CAPTURE_PHOTO"):
                         pid[the_command] = the_pid
                     else:
-                        
+                        if (video_on != 0):
+                            time.sleep(1)
+                            #child
+                            if (os.fork() == 0):
+                                os.execl(command["VIDEO_STREAM"], *(command["VIDEO_STREAM"], video_on, host))
+                                #start_process("START:VIDEO_STREAM:" + str(video_on) + "|")
+
                         while(not os.path.isfile("/home/pi/robo-ops/pi-clients/pics/" + str(process_args[len(process_args) - 1]))):
                             continue
                         
@@ -123,17 +147,22 @@ def start_process(input_str):
         elif (start_stop == "STOP"):
             if (pid[the_command] != False):
                 if (the_command == "VIDEO_STREAM"):
-                    kill = "sudo pkill ffmpeg"
+                    #kill = "sudo pkill ffmpeg"
+                    os.system("/home/pi/robo-ops/pi-clients/stop_video.sh")
+                    video_on = 0
                 else:
                     kill = "sudo kill -9 " + str(pid[the_command])
-
-                os.system(kill)
+                    os.system(kill)
+                
+                #os.system(kill)
                 pid[the_command] = False
 
 #except:
 #        print("server-listener: error in start_process")
 #   finally:
 #       return
+
+time.sleep(10);
 
 if (len(sys.argv) < 2):
     print("server-listener: server_ip")
@@ -158,7 +187,7 @@ while True:
         try:
             a_command = None
             a_command = receive(s)
-
+            sys.stdout.flush()
             if a_command != None and a_command != "":
                 start_process(a_command)
             else:
