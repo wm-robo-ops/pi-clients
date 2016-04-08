@@ -31,11 +31,18 @@ port = 9000
 
 pic_port = 7000
 
+#log outputs
+def writeToLog(the_string):
+    f = open("/home/pi/robo-ops/pi-clients/server_listener.log", "a")
+    f.write(the_string + "\n");
+    f.close()
+
 #connect to server
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
     print("server-listener: connected to command server")
+    writeToLog("server-listener: connected to command server")
     #find my ip
     ni.ifaddresses('wlan0');
     ip = ni.ifaddresses('wlan0')[2][0]['addr']
@@ -54,6 +61,7 @@ def sendPic(file_name):
         pic_sock.connect((host, pic_port))
         
         print("server-listener: sending picture to server ip: " + str(host) + "port: " + str(port))
+        writeToLog("server-listener: sending picture to server ip: " + str(host) + "port: " + str(port))
         
         # send file
         data = f.read(1024)
@@ -61,9 +69,11 @@ def sendPic(file_name):
             pic_sock.sendall(data)
             data = f.read(1024)
         print("server-listener: done sending pic")
+        writeToLog("server-listener: done sending pic")
     
     except:
         print("server-listener: error in sendPic")
+        writeToLog("server-listener: error in sendPic")
 
     finally:
         f.close()
@@ -72,6 +82,7 @@ def sendPic(file_name):
 #recieve data from socket
 def receive(s):
     print("server-listener: waiting to receive command")
+    writeToLog("server-listener: waiting to receive command")
     command = ''
     data = ' '
     
@@ -84,6 +95,7 @@ def receive(s):
             command += data
 
     print ("server-listener: " + command)
+    writeToLog("server-listener: " + command)
     return command
 
 
@@ -106,6 +118,7 @@ def start_process(input_str):
                 if (the_command == "CAPTURE_PHOTO" and pid["VIDEO_STREAM"] != False):
                     os.system("/home/pi/robo-ops/pi-clients/stop_video.sh")
                     print("stopped video")
+                    writeToLog("stopped video")
                     time.sleep(2)
                     #return
                 process_args = [command[the_command]]
@@ -166,10 +179,12 @@ time.sleep(10);
 
 if (len(sys.argv) < 2):
     print("server-listener: server_ip")
+    writeToLog("server-listener: server_ip")
     sys.exit(1)
 
 host = str(sys.argv[1])
 print("server-listener: starting with server ip: " + str(host) + " and port: " + str(port))
+writeToLog("server-listener: starting with server ip: " + str(host) + " and port: " + str(port))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isConnected = 0
@@ -192,12 +207,14 @@ while True:
                 start_process(a_command)
             else:
                 print("server-listener: disconnected from command server")
+                writeToLog("server-listener: disconnected from command server")
 #s.close()
                 isConnected = 0
                 break
 
         except socket.error:
             print("server-listener: disconnected from command server")
+            writeToLog("server-listener: disconnected from command server")
             s.close()
             isConnected = 0
             break
