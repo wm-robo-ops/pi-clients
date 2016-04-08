@@ -101,7 +101,7 @@ def receive(s):
 
 #start process
 def start_process(input_str):
-#   try:
+    try:
         global video_on
         process = input_str.split("|")
         args = process[0].split(":")
@@ -170,12 +170,12 @@ def start_process(input_str):
                 #os.system(kill)
                 pid[the_command] = False
 
-#except:
-#        print("server-listener: error in start_process")
-#   finally:
-#       return
+    except:
+        print("server-listener: error in start_process")
+    finally:
+        return
 
-time.sleep(10);
+time.sleep(10)
 
 if (len(sys.argv) < 2):
     print("server-listener: server_ip")

@@ -35,6 +35,12 @@ from Adafruit_BNO055 import BNO055
 host = "192.168.1.132"
 port = 3000
 
+#log outputs
+def writeToLog(the_string):
+    f = open("/home/pi/robo-ops/pi-clients/server_listener.log", "a")
+    f.write(the_string + "\n");
+    f.close()
+
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
@@ -49,10 +55,12 @@ def send(a_str, s):
 
 if (len(sys.argv) < 2):
     print("dof: server_ip")
+    writeToLog("dof: server_ip")
     sys.exit(1)
 
 host = str(sys.argv[1])
 print("dof: connecting to server with ip: " + str(host) + " and port: " + str(port))
+writeToLog("dof: connecting to server with ip: " + str(host) + " and port: " + str(port))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 isConnected = 0
@@ -104,9 +112,11 @@ while True:
             #bno055 is connected
             bno055 = 1
             print("dof: device connected")
+            writeToLog("dof: device connected")
 
         except:
             print("dof: error starting bno055")
+            writeToLog("dof: error starting bno055")
 
     #try to connect socket
     while isConnected == 0:
@@ -114,6 +124,7 @@ while True:
             s = connect()
             isConnected = 1
             print("dof: connected to server")
+            writeToLog("dof: connected to server")
 
         except socket.error:
             time.sleep(1)
