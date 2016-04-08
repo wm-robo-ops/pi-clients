@@ -51,7 +51,7 @@ while True:
     while True:
         #try to send data
         try:
-            data_pipe = open('outpipe', 'r', 0)
+            data_pipe = open('/home/pi/robo-ops/pi-clients/outpipe', 'r', 0)
             read = None
             while sys.stdin != "":
                 read = data_pipe.read(1024);
