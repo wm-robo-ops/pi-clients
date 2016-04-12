@@ -34,7 +34,7 @@ pic_port = 7000
 #log outputs
 def writeToLog(the_string):
     f = open("/home/pi/robo-ops/pi-clients/server_listener.log", "a")
-    f.write(the_string + "\n");
+    f.write(the_string + "\n")
     f.close()
 
 #connect to server
@@ -44,7 +44,7 @@ def connect():
     print("server-listener: connected to command server")
     writeToLog("server-listener: connected to command server")
     #find my ip
-    ni.ifaddresses('wlan0');
+    ni.ifaddresses('wlan0')
     ip = ni.ifaddresses('wlan0')[2][0]['addr']
     send(ip + "~", s)
     return s

@@ -13,14 +13,14 @@ port = 8000
 #log outputs
 def writeToLog(the_string):
     f = open("/home/pi/robo-ops/pi-clients/server_listener.log", "a")
-    f.write(the_string + "\n");
+    f.write(the_string + "\n")
     f.close()
 
 def connect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
     #find my ip
-    ni.ifaddresses('wlan0');
+    ni.ifaddresses('wlan0')
     ip = ni.ifaddresses('wlan0')[2][0]['addr']
     send(ip + "~", s)
     return s
@@ -63,8 +63,8 @@ while True:
             data_pipe = open('/home/pi/robo-ops/pi-clients/outpipe', 'r', 0)
             read = None
             while sys.stdin != "":
-                read = data_pipe.read(1024);
-                send(read, s);
+                read = data_pipe.read(1024)
+                send(read, s)
 
         except socket.error:
             s.close()
