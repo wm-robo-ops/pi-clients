@@ -39,8 +39,20 @@ sudo make install
 ```
 sudo pip install netifaces
 ```
-
 ##Running
 ```
 ./server-listener.py server_ip
 ```
+##SSH Ports
+- 1100* - BigDaddy
+	- `11000`: BigDaddy Main
+	- `11001`: BigDaddy Mount1
+	- `11002`: BigDaddy Mount2
+	- `11003`: BigDaddy Mount3
+- `12000`: Scout
+- `13000`: Flyer
+##IP Adresses
+- BigDaddy Main: `192.168.1.133`
+- BigDaddy Mount1: `192.168.1.121`
+- BigDaddy Mount2: `192.168.1.151`
+- Scout: `192.168.1.142`
