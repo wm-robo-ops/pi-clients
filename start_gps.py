@@ -81,6 +81,7 @@ while True:
                 lon = ''
                 if hasattr(report, 'lat'):
                     lat = report.lat
+                    print(report)
                 if hasattr(report, 'lat'):
                     lon = report.lon
                 send(("lat:" + str(lat) + ",lon:" + str(lon) + "|"), s)
@@ -99,13 +100,13 @@ while True:
             writeToLog("gps: gps disconnected")
             break
 
-#        except:
-#            session = None
-#            gps_connected = 0
-#            s.close()
-#            isConnected = 0
-#            print("gps: something went wrong")
-#            writeToLog("gps: something went wrong")
-#            break
+        except:
+            session = None
+            gps_connected = 0
+            s.close()
+            isConnected = 0
+            print("gps: something went wrong")
+            writeToLog("gps: something went wrong")
+            break
 
 s.close()

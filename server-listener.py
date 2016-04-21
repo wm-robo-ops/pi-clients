@@ -20,7 +20,7 @@ pid = {
 command = {
     "VIDEO_STREAM": "/home/pi/robo-ops/pi-clients/start_video_stream2.sh",
     "DIRECTION_STREAM": "/home/pi/robo-ops/pi-clients/dof_device.py",
-    "GPS_STREAM": "/home/pi/robo-ops/pi-clients/test.py",
+    "GPS_STREAM": "/home/pi/robo-ops/pi-clients/start_gps.sh",
     "CAPTURE_PHOTO": "/home/pi/robo-ops/pi-clients/take_pic.sh"
 }
 
@@ -163,6 +163,8 @@ def start_process(input_str):
                     #kill = "sudo pkill ffmpeg"
                     os.system("/home/pi/robo-ops/pi-clients/stop_video.sh")
                     video_on = 0
+                elif (the_command == "GPS_STREAM"):
+                    os.system("/home/pi/robo-ops/pi-clients/stop_gps.sh")
                 else:
                     kill = "sudo kill -9 " + str(pid[the_command])
                     os.system(kill)
