@@ -2,4 +2,4 @@
 
 sudo pkill python
 sudo pkill ffmpeg
-sudo ./start.sh
+sudo $HOME/robo-ops/pi-clients/start.sh
