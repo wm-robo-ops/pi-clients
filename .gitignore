@@ -64,3 +64,6 @@ target/
 # Images
 *.png
 *.jpg
+
+# Nohup stuff
+*.out
