@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-hits=`ifconfig | grep -o inet\ addr | wc -l`
+hits=`/sbin/ifconfig | grep -o inet\ addr | wc -l`
 
 #echo "$hits"
 
