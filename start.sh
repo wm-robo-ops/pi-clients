@@ -8,6 +8,10 @@ server=ec2-54-83-155-188.compute-1.amazonaws.com
 server=ec2-54-164-14-252.compute-1.amazonaws.com
 # Quartairy
 server=ec2-54-173-230-101.compute-1.amazonaws.com
+#Backup Comp Server
+server=ec2-54-174-222-88.compute-1.amazonaws.com
+#Primary Comp Server
+server=ec2-52-90-176-199.compute-1.amazonaws.com
 
 rm /home/pi/robo-ops/pi-clients/server_listener.log
 bash /home/pi/robo-ops/pi-clients/repo_update.sh
